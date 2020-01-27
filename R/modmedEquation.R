@@ -7,10 +7,30 @@
 #' @export
 meanCentering=function(data,names){
   for(i in seq_along(names)){
-    data[[paste0(names[i],".c")]]=scale(data[[names[i]]],center=TRUE,scale=FALSE)
+    data[[paste0(names[i],".c")]]=scale(data[[names[i]]],center=TRUE,scale=FALSE)[,1]
   }
   data
 }
+
+#'standardize data
+#' @param df A data.frame
+#' @param names column names to mean centering
+#' @export
+standardizeDf=function(df,names){
+  for(i in 1:length(names)){
+    df[[paste0("Z",names[i])]]=standardize(df[[names[i]]])
+  }
+  df
+}
+
+#' Standardize variable
+#' @param x A numeric vector
+#' @export
+standardize=function(x){
+  x=(x-mean(x,na.rm=T))/sd(x,na.rm=T)
+  x
+}
+
 
 #'make interaction equation
 #'@param x character vector

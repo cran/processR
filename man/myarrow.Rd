@@ -4,8 +4,22 @@
 \alias{myarrow}
 \title{Draw arrow}
 \usage{
-myarrow(from, to, lwd = 1, adjust = 1, label = "", label.pos = 0.5,
-  arr.pos = NULL, ...)
+myarrow(
+  from,
+  to,
+  lwd = 1,
+  adjust = 1,
+  label = "",
+  label.pos = 0.5,
+  arr.pos = NULL,
+  radx = 0.1,
+  rady = 0.06,
+  xadj = NULL,
+  yadj = NULL,
+  curve = 0,
+  dd = 0,
+  ...
+)
 }
 \arguments{
 \item{from}{coordinates (x,y) of the point *from* which to draw arrow.}
@@ -21,6 +35,18 @@ myarrow(from, to, lwd = 1, adjust = 1, label = "", label.pos = 0.5,
 \item{label.pos}{label position}
 
 \item{arr.pos}{arrow position}
+
+\item{radx}{horizontal radius of the box.}
+
+\item{rady}{vertical radius of the box.}
+
+\item{xadj}{numeric x adjustment}
+
+\item{yadj}{numeric y adjustment}
+
+\item{curve}{integer relative size of curve (fraction of points distance)}
+
+\item{dd}{ength of segment arm, directed away from endpoints.}
 
 \item{...}{Further argument to be passed to straightarrow()}
 }

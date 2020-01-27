@@ -217,6 +217,7 @@ makeEquation=function(X,M,Y,add2ndMediation=TRUE,covar=list()){
 #' @param covar A list
 #' @param prefix prefix
 #' @param grouplabels A list
+#' @param multipleMediator logical
 #' @importFrom stringr str_trim
 #' @export
 #' @examples
@@ -224,9 +225,14 @@ makeEquation=function(X,M,Y,add2ndMediation=TRUE,covar=list()){
 #' covar=list(name=c("C1","C2","C3"),label=c("ese","sex","tenure"),site=list(c("M","Y"),"Y","Y"))
 #' grouplabels=list(C1="e")
 #' addCovarEquation(equation,covar=covar)
-addCovarEquation=function(equation,covar=list(),prefix="f",grouplabels=NULL){
+#' equation="M1 ~ a11*X\nM2 ~ a12*M"
+#' covar=list(name=c("C1","C2","C3"),label=c("ese","sex","tenure"),site=list(c("M1","Y"),"M2","M2"))
+#' addCovarEquation(equation,covar=covar,multipleMediator=TRUE)
+#' addCovarEquation(equation,covar=covar)
+addCovarEquation=function(equation,covar=list(),prefix="f",grouplabels=NULL,multipleMediator=FALSE){
 
-
+       # prefix="f";grouplabels=NULL;multipleMediator=FALSE
+  # prefix=NULL
   temp1=unlist(strsplit(equation,"\n"))
   temp1
   temp2=strsplit(temp1,"~")
@@ -237,8 +243,14 @@ addCovarEquation=function(equation,covar=list(),prefix="f",grouplabels=NULL){
   for(i in 1:length(temp2)){
       var=temp2[[i]][1]
       var=str_trim(var,side="both")
+      var
       covar
-      temp3=seekVar(covar=covar,var=var,prefix=prefix,start=start,grouplabels=grouplabels)
+      if(multipleMediator){
+         suffix=i
+      } else{
+         suffix<-NULL
+      }
+      temp3=seekVar(covar=covar,var=var,prefix=prefix,start=start,grouplabels=grouplabels,suffix=suffix)
       temp3
       if(is.null(temp3)){
           result[[i]]=paste(var,"~",temp2[[i]][2])
@@ -257,17 +269,19 @@ addCovarEquation=function(equation,covar=list(),prefix="f",grouplabels=NULL){
 #' @param prefix A prefix
 #' @param start A start number
 #' @param grouplabels A list
+#' @param suffix A suffix
 #' @export
 #' @examples
 #' covar=list(name=c("C1","C2","C3"),label=c("ese","sex","tenure"),site=list(c("M","Y"),"Y","Y"))
-#' var="M"
-#' seekVar(covar,var,prefix=NULL)
-seekVar=function(covar=list(),var,prefix="h",start=1,grouplabels=NULL){
+#' var="Y"
+#' seekVar(covar,var,prefix="h")
+seekVar=function(covar=list(),var,prefix="h",start=1,grouplabels=NULL,suffix=NULL){
+  # prefix="h";start=1;grouplabels=NULL
   temp=c()
   if(length(covar$name)>0){
     j=start
     for(i in 1:length(covar$name)){
-      temp=c(temp,covar$name[i])
+      if(var %in% covar$site[[i]]) temp=c(temp,covar$name[i])
     }
     res=c()
     for(i in seq_along(temp)){
@@ -279,11 +293,12 @@ seekVar=function(covar=list(),var,prefix="h",start=1,grouplabels=NULL){
           res=c(res,temp[i])
         }
     }
+
     temp=c()
     j=1
     for(i in seq_along(res)){
         if(!is.null(prefix)) {
-          temp=c(temp,paste0(prefix,j,"*",res[i]))
+          temp=c(temp,paste0(prefix,j,suffix,"*",res[i]))
         } else{
           temp=c(temp,res[i])
         }

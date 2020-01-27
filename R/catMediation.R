@@ -2,6 +2,7 @@
 #' @param X Name of independent variable
 #' @param Y Name of dependent variable
 #' @param M Name of mediator variable
+#' @param labels optional list
 #' @param data A data.frame
 #' @param moderator A list
 #' @param covar A list of covariates
@@ -11,9 +12,10 @@
 #' @param rangemode range mode
 #' @export
 #' @examples
+#' labels=list(X="cyl",M="am",Y="mpg")
 #' moderator=list(name=c("cyl","wt"),site=list(c("a","c"),c("c")))
 #' covar=list(name=c("carb","disp"),label=c("carb","disp"),site=list(c("M","Y"),"Y","Y"))
-#' cat(catMediation(X="cyl",M="am",Y="mpg",data=mtcars))
+#' cat(catMediation(labels=labels,data=mtcars))
 #' cat(catMediation(X="am",Y="mpg",data=mtcars,moderator=moderator,covar=covar,maxylev=6))
 #' cat(catMediation(X="am",Y="mpg",data=mtcars,moderator=moderator,covar=covar))
 #' cat(catMediation(X="cyl",M="am",Y="mpg",data=mtcars))
@@ -22,7 +24,7 @@
 #' cat(catMediation(X="am",M="hp",Y="mpg",data=mtcars,moderator=moderator,maxylev=6))
 #' cat(catMediation(X="hp",M="am",Y="mpg",data=mtcars,maxylev=6))
 #' cat(catMediation(X="am",M="hp",Y="mpg",data=mtcars,moderator=moderator,covar=covar))
-catMediation=function(X,M=NULL,Y,data,moderator=list(),
+catMediation=function(X=NULL,M=NULL,Y=NULL,labels=list(),data,moderator=list(),
                       covar=NULL,mode=0,maxylev=2,range=TRUE,rangemode=1){
 
       # X="X";M="M";Y="Y";cat="M";count=4;data=NULL;moderator=list();maxylev=6;
@@ -31,7 +33,11 @@ catMediation=function(X,M=NULL,Y,data,moderator=list(),
       # moderator=list(name=c("carb"),site=list(c("c")))
       # X="am";M=NULL;Y="mpg";data=mtcars;covar=NULL;mode=0;range=TRUE;rangemode=1;maxylev=2
 
-    res=c()
+  if(is.null(X)) X=labels$X
+  if(is.null(M)) if(!is.null(labels$M)) M=labels$M
+  if(is.null(Y)) Y=labels$Y
+
+  res=c()
 
     xcount=length(unique(data[[X]]))
     if(!is.null(M)) {
@@ -134,7 +140,7 @@ catMediation=function(X,M=NULL,Y,data,moderator=list(),
         equation=paste0(equation,temp)
         }
 
-
+    if(mode==0) equation=deleteSingleNumber(equation)
     equation
 
 
@@ -220,7 +226,19 @@ makeIndirectEquationCat=function(X,M,temp1,temp2,temp3,moderatorNames,
         ind<-res[[1]]
         ind.below=res[[2]]
         ind.above=res[[3]]
+
+
+        temp4=divideEquation(ind)
+        if(str_detect(temp4[1],"\\+")) {
+            equation=paste0(equation,"\nCE.XonM",xlabel,mlabel," :=",temp4[1],"\n")
+        }
+        if(str_detect(temp4[2],"\\+")) {
+            equation=paste0(equation,"CE.MonY",xlabel,mlabel," :=",temp4[2],"\n")
+        }
         equation=paste0(equation,"\nindirect",xlabel,mlabel," :=",ind,"\n")
+        if(!is.null(extractIMM(ind))) {
+          equation=paste0(equation,"index.mod.med",xlabel,mlabel," :=",extractIMM(ind),"\n")
+        }
         temp3=stringr::str_replace_all(temp3,":","*")
         direct=strGrouping(temp3,X[i])$yes
         dir=paste0(str_flatten(direct,"+"))
@@ -232,7 +250,21 @@ makeIndirectEquationCat=function(X,M,temp1,temp2,temp3,moderatorNames,
         equation=paste0(equation,"total",xlabel,mlabel," := direct",xlabel,mlabel," + indirect",xlabel,mlabel,"\n")
         equation=paste0(equation,"prop.mediated",xlabel,mlabel," := indirect",xlabel,mlabel," / total",xlabel,mlabel,"\n")
         if((range)&(length(moderatorNames)>0)){
+            temp4=divideEquation(ind.below)
+            if(str_detect(temp4[1],"\\+")) {
+                equation=paste0(equation,"CE.XonM",xlabel,mlabel,".below :=",temp4[1],"\n")
+            }
+            if(str_detect(temp4[2],"\\+")) {
+                equation=paste0(equation,"CE.MonY",xlabel,mlabel,".below :=",temp4[2],"\n")
+            }
             equation=paste0(equation,"indirect",xlabel,mlabel,".below :=",ind.below,"\n")
+            temp4=divideEquation(ind.above)
+            if(str_detect(temp4[1],"\\+")) {
+                equation=paste0(equation,"CE.XonM",xlabel,mlabel,".above :=",temp4[1],"\n")
+            }
+            if(str_detect(temp4[2],"\\+")) {
+                equation=paste0(equation,"CE.MonY",xlabel,mlabel,".above :=",temp4[2],"\n")
+            }
             equation=paste0(equation,"indirect",xlabel,mlabel,".above :=",ind.above,"\n")
             equation=paste0(equation,"direct",xlabel,mlabel,".below:=",dir.below,"\n")
             equation=paste0(equation,"direct",xlabel,mlabel,".above:=",dir.above,"\n")
@@ -259,3 +291,18 @@ makeIndirectEquationCat=function(X,M,temp1,temp2,temp3,moderatorNames,
       }
    equation
 }
+
+
+#'divide equation
+#'@param equation a string
+#'@export
+#'@examples
+#'equation="(a1+a3*W)*(b)"
+#'divideEquation(equation)
+divideEquation=function(equation){
+     result=unlist(strsplit(equation,"\\)\\*\\("))
+     result[1]=str_replace(result[1],"^\\(","")
+     result[2]=str_replace(result[2],"\\)$","")
+     result
+}
+

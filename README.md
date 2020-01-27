@@ -1,9 +1,22 @@
 R package processR  <img src="inst/figures/imgfile.png" align="right" height="120" width="103.6"/>
 =========================================================
-
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/processR)](https://cran.r-project.org/package=processR)
 
 
 The `processR` package aims to be a user-friendly way to perform moderation, mediation, moderated mediation and moderated moderation in R. This package is inspired from famous PROCESS macro for SPSS and SAS created by Andrew Hayes. 
+
+**processR is under the GPL-3 license. For a commercial license, please
+[contact me](mailto: cardiomoon@gmail.com).**
+
+**If you find processR
+useful, please consider supporting its development\!**
+
+<p align="center">
+<a href="https://www.paypal.me/cardiomoon/20">
+<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" />
+</a>
+
+</p>
 
 ## PROCESS macro and R package `processR`
 

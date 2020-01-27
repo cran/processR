@@ -6,37 +6,98 @@
 #' @param label label
 #' @param label.pos label position
 #' @param arr.pos arrow position
+#'@param radx horizontal radius of the box.
+#'@param rady vertical radius of the box.
+#'@param xadj numeric x adjustment
+#'@param yadj numeric y adjustment
+#'@param curve integer relative size of curve (fraction of points distance)
+#'@param dd ength of segment arm, directed away from endpoints.
 #' @param ... Further argument to be passed to straightarrow()
 #' @export
 #' @importFrom diagram textplain straightarrow
-myarrow=function(from,to,lwd=1,adjust=1,label="",label.pos=0.5,arr.pos=NULL,...){
+myarrow=function(from,to,lwd=1,adjust=1,label="",label.pos=0.5,arr.pos=NULL,radx=0.10,rady=0.06,xadj=NULL,yadj=NULL,curve=0,dd=0,...){
     if(!is.null(arr.pos)){
         if(arr.pos==0) arr.pos<-NULL
     }
     if(is.null(arr.pos)){
-        if(adjust){
-            if(from[2]==to[2]) arr.pos=0.8
-            else if(from[2]>to[2]) arr.pos=0.7
-            else arr.pos=0.68
-        } else{
-            distance=abs(to[2]-from[2])+abs(to[1]-from[1])
-            if(distance<=0.23) {
-                arr.pos=0.86
+        # if(adjust){
+        #     if(from[2]==to[2]) arr.pos=0.8
+        #     else if(from[2]>to[2]) arr.pos=0.7
+        #     else arr.pos=0.68
+        # } else{
+        #     distance=abs(to[2]-from[2])+abs(to[1]-from[1])
+        #     if(distance<=0.23) {
+        #         arr.pos=0.86
+        #
+        #     } else if(distance>0.5){
+        #         arr.pos=0.95
+        #     } else{
+        #         arr.pos=0.94
+        #     }
+        # }
+        # distance=abs(to[2]-from[2])+abs(to[1]-from[1])
+      if(adjust==0){
+         if(abs(to[1]-from[1])>abs(to[2]-from[2])){
+             distance=abs(to[1]-from[1])
+             arr.pos=(distance-0.01)/distance
+         } else{
+           distance=abs(to[2]-from[2])
+           arr.pos=(distance-0.02)/distance
+         }
+      } else {
+        distance1=abs(to[1]-from[1])
+        ratio1=ifelse(distance1==0,0,(distance1-radx-0.016)/distance1)
+        distance2=abs(to[2]-from[2])
+        ratio2=ifelse(distance2==0,0,(distance2-rady-0.03)/distance2)
+        arr.pos=max(ratio1,ratio2)
+      }
+      # else if(abs(to[2]-from[2])>=0.3){
+      #      if(abs(to[1]-from[1])>=0.4){
+      #        distance=abs(to[1]-from[1])
+      #        arr.pos=(distance-radx-0.015)/distance
+      #
+      #      } else{
+      #        distance=abs(to[2]-from[2])
+      #        arr.pos=(distance-rady-0.03)/distance
+      #      }
+      #
+      # } else {   #if(abs(to[1]-from[1])>abs(to[2]-from[2]))
+      #   distance=abs(to[1]-from[1])
+      #   arr.pos=(distance-radx-0.015)/distance
+      # }
 
-            } else if(distance>0.5){
-                arr.pos=0.95
-            } else{
-                arr.pos=0.94
-            }
-        }
-        distance=abs(to[2]-from[2])+abs(to[1]-from[1])
-        # str(distance)
-        # str(arr.pos)
     }
+    # mid=from+label.pos*(to-from)*arr.pos
     mid=from+label.pos*(to-from)
-    textplain(mid=mid,lab=label,adj=c(1,-0.5))
 
-    straightarrow(from=from,to=to,lwd=lwd,arr.pos=arr.pos,arr.type="triangle",...)
+    xadj1=1
+    yadj1=-0.3
+
+    # cat("from=",from,"\n")
+    # cat("to=",to,"\n")
+    if(length(to)>1){
+    if(from[2]>=to[2]) {
+      xadj1=0
+    }
+    if(from[1]==to[1]) {
+      xadj1=1.5
+      yadj1=0
+    }
+    }
+
+    if(is.null(xadj)) xadj=xadj1
+    if(is.null(yadj)) yadj=yadj1
+    if(curve!=0) {
+      curvedarrow(from=from,to=to,lwd=lwd,arr.pos=arr.pos*0.9,arr.type="triangle",curve=curve,...)
+      mid[2]=mid[2]-curve
+    } else if(dd!=0){
+      segmentarrow(from=from,to=to,lwd=lwd,arr.pos=arr.pos*0.9,arr.type="triangle",path="DHU",
+                   arr.side=3,dd=dd,...)
+      mid[2]=mid[2]-dd
+    } else{
+       straightarrow(from=from,to=to,lwd=lwd,arr.pos=arr.pos,arr.type="triangle",...)
+    }
+    textplain(mid=mid,lab=label,adj=c(xadj,yadj))
 }
 
 #' Draw node
@@ -65,6 +126,9 @@ midPoint=function(from=0,to=1,length.out=2){
 #'@param rady vertical radius of the box.
 #'@param xmargin horizontal margin of plot
 #'@param yinterval vertical interval between box
+#'@param box.col fill color of box
+#'@param xlim the x limits (min,max) of the plot
+#'@param ylim the y limits (min,max) of the plot
 #'@param moderator optional list of moderators
 #'@param labels optional labels of X,Y and Z variables
 #'@param covar covariate optional list of covariates
@@ -84,6 +148,8 @@ midPoint=function(from=0,to=1,length.out=2){
 #'@export
 conceptDiagram2=function(X="X",M="M",Y="Y",latent=rep(FALSE,3),xb=FALSE,mc=FALSE,
                         radx=0.06,rady=0.06,xmargin=0.03,yinterval=NULL,
+                        box.col="white",
+                        xlim=NULL,ylim=NULL,
                         moderator=list(),labels=list(),covar=list()){
 
       # radx=0.12;rady=0.05;xmargin=0.03;yinterval=NULL
@@ -96,12 +162,13 @@ conceptDiagram2=function(X="X",M="M",Y="Y",latent=rep(FALSE,3),xb=FALSE,mc=FALSE
       # covar
 
     if(is.null(yinterval)) yinterval=rady*7
-    openplotmat()
+
     ystart=0.4
     if(length(covar$name)>2) ystart=0.5
     x=c(0+radx+xmargin,ystart)
     y=c(1-(radx+xmargin),ystart)
     m=c(0.5,ystart+yinterval)
+    m2=c(0.5,0+rady+0.02)
 
 
     moderator
@@ -110,7 +177,12 @@ conceptDiagram2=function(X="X",M="M",Y="Y",latent=rep(FALSE,3),xb=FALSE,mc=FALSE
     xpos=midPoint(0,1,length(select))
     select
     for(j in seq_along(select)){
-        temp=c(xpos[j],0.4+yinterval-0.05)
+        if(is.null(M)) {
+          temp=c(xpos[j],0.4+yinterval-0.05)
+
+        } else{
+          temp=c(xpos[j],m[2]+yinterval)
+        }
         assign(paste0("z",select[j]),temp)
     }
 
@@ -148,6 +220,16 @@ conceptDiagram2=function(X="X",M="M",Y="Y",latent=rep(FALSE,3),xb=FALSE,mc=FALSE
         assign(paste0("z",select[j]),temp)
     }
 
+    if(is.null(xlim)) xlim=c(0,1)
+    if(is.null(ylim)) {
+        if((!is.null(M)) & (4 %in% moderator$pos)){
+           ylim=c(0,1.4)
+        } else{
+            ylim=c(0,1)
+        }
+    }
+    openplotmat(xlim=xlim,ylim=ylim)
+
     startpos=list()
     sum=1
     for(i in seq_along(moderator$pos)){
@@ -160,7 +242,14 @@ conceptDiagram2=function(X="X",M="M",Y="Y",latent=rep(FALSE,3),xb=FALSE,mc=FALSE
     labels
 
     (xlab=ifelse(is.null(labels[[X]]),X,labels[[X]]))
-    if(!is.null(M)) (mlab=ifelse(is.null(labels[[M]]),M,labels[[M]]))
+    if(!is.null(M)) {
+       if(length(M)==1){
+       (mlab=ifelse(is.null(labels[[M]]),M,labels[[M]]))
+       } else if(length(M)==2){
+       (mlab1=ifelse(is.null(labels[["M1"]]),M[1],labels[["M1"]]))
+       (mlab2=ifelse(is.null(labels[["M2"]]),M[2],labels[["M2"]]))
+       }
+    }
     (ylab=ifelse(is.null(labels[[Y]]),Y,labels[[Y]]))
 
 
@@ -169,36 +258,45 @@ conceptDiagram2=function(X="X",M="M",Y="Y",latent=rep(FALSE,3),xb=FALSE,mc=FALSE
         # myarrow(from=x,to=y,label="c'")
         # myarrow(from=x,to=m,label="a")
         # myarrow(from=m,to=y,label="b")
-        myarrow(from=x,to=y)
-        myarrow(from=x,to=m)
-        myarrow(from=m,to=y)
+        myarrow(from=x,to=y,radx=radx,rady=rady)
+        myarrow(from=x,to=m,radx=radx,rady=rady)
+        myarrow(from=m,to=y,radx=radx,rady=rady)
+        if(length(M)==2) {
+           myarrow(from=x,to=m2,radx=radx,rady=rady)
+           myarrow(from=m2,to=y,radx=radx,rady=rady)
+        }
     } else{
-        myarrow(from=x,to=y,label="")
+        myarrow(from=x,to=y,label="",radx=radx,rady=rady)
     }
-    if(xb) myarrow(from=x,to=0.5*(m+y))
-    if(mc) myarrow(from=m,to=0.5*(x+y))
+    if(xb) myarrow(from=x,to=0.5*(m+y),radx=radx,rady=rady,adjust=0)
+    if(mc) myarrow(from=m,to=0.5*(x+y),radx=radx,rady=rady)
 
     endpos=moderator2pos(moderator,x,y,m)
     endpos
 
     for(i in seq_along(endpos)){
-        myarrow(from=startpos[[i]],to=endpos[[i]],adjust=0)
+        myarrow(from=startpos[[i]],to=endpos[[i]],adjust=0,radx=radx,rady=rady)
     }
 
     if(length(covar$name)>0) drawCovar(covar,x,y,m,radx=radx,rady=rady)
 
-    drawtext(x,radx=radx,rady=rady,lab=xlab,latent=latent[1])
+    drawtext(x,radx=radx,rady=rady,lab=xlab,latent=latent[1],box.col=box.col)
 
-    drawtext(y,radx=radx,rady=rady,lab=ylab,latent=latent[3])
+    drawtext(y,radx=radx,rady=rady,lab=ylab,latent=latent[3],box.col=box.col)
     if(!is.null(M)) {
+        if(length(M)==1){
 
-        drawtext(m,radx=radx,rady=rady,lab=mlab,latent=latent[2])
+          drawtext(m,radx=radx,rady=rady,lab=mlab,latent=latent[2],box.col=box.col)
+        } else if(length(M)==2){
+            drawtext(m,radx=radx,rady=rady,lab=mlab1,latent=latent[2],box.col=box.col)
+            drawtext(m2,radx=radx,rady=rady,lab=mlab2,latent=latent[2],box.col=box.col)
+        }
     }
 
     for(i in seq_along(moderator$pos)){
         z=eval(parse(text=paste0("z",i)))
         lab=ifelse(is.null(moderator$label[i]),moderator$name[i],moderator$label[i])
-        drawtext(z,radx=radx,rady=rady,lab=lab,latent=moderator$latent[i])
+        drawtext(z,radx=radx,rady=rady,lab=lab,latent=moderator$latent[i],box.col=box.col)
     }
 }
 
@@ -255,8 +353,9 @@ drawCovar=function(covar=list(),x,y,m,radx=0.10,rady=0.06,yinterval=0.02){
     for(i in 1:count){
         pos[[i]]<-c(x[1]+(radx/2)*(i),x[2]-(rady*2+yinterval)*i)
 
-        if("M" %in% covar$site[[i]]) myarrow(pos[[i]],m)
-        if("Y" %in% covar$site[[i]]) myarrow(pos[[i]],y)
+        if("M" %in% covar$site[[i]]) myarrow(pos[[i]],m,radx=radx,rady=rady)
+        if("Mi" %in% covar$site[[i]]) myarrow(pos[[i]],m,radx=radx,rady=rady)
+        if("Y" %in% covar$site[[i]]) myarrow(pos[[i]],y,radx=radx,rady=rady)
     }
     for(i in 1:count){
         lab=ifelse(is.null(covar$label[i]),covar$name[i],covar$label[i])

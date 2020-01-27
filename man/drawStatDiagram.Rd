@@ -4,8 +4,21 @@
 \alias{drawStatDiagram}
 \title{draw StatDiagram}
 \usage{
-drawStatDiagram(no, arrows, nodes, labels, xmargin, radx, rady,
-  fit = NULL)
+drawStatDiagram(
+  no,
+  arrows,
+  nodes,
+  labels,
+  nodeslabels = list(),
+  xmargin,
+  radx,
+  rady,
+  fit = NULL,
+  addprime = TRUE,
+  box.col = "white",
+  xlim = c(0, 1),
+  ylim = c(0, 1)
+)
 }
 \arguments{
 \item{no}{process macro model number}
@@ -16,6 +29,8 @@ drawStatDiagram(no, arrows, nodes, labels, xmargin, radx, rady,
 
 \item{labels}{A list}
 
+\item{nodeslabels}{A list}
+
 \item{xmargin}{horizontal margin of plot}
 
 \item{radx}{horizontal radius of the box.}
@@ -23,6 +38,14 @@ drawStatDiagram(no, arrows, nodes, labels, xmargin, radx, rady,
 \item{rady}{vertical radius of the box.}
 
 \item{fit}{An object of class lavaan. Result of lavaan::sem()}
+
+\item{addprime}{logical Whether add prime to label "c"}
+
+\item{box.col}{fill color of the box}
+
+\item{xlim}{the x limits (min,max) of the plot}
+
+\item{ylim}{the y limits (min,max) of the plot}
 }
 \description{
 draw StatDiagram

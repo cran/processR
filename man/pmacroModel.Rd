@@ -4,8 +4,17 @@
 \alias{pmacroModel}
 \title{draw conceptual diagram of process macro model}
 \usage{
-pmacroModel(no = 1, labels = list(), covar = list(), radx = 0.06,
-  rady = 0.06, xmargin = 0.03)
+pmacroModel(
+  no = 1,
+  labels = list(),
+  covar = list(),
+  radx = 0.06,
+  rady = 0.06,
+  xmargin = 0.03,
+  box.col = "white",
+  xlim = NULL,
+  ylim = NULL
+)
 }
 \arguments{
 \item{no}{process macro model number}
@@ -19,13 +28,20 @@ pmacroModel(no = 1, labels = list(), covar = list(), radx = 0.06,
 \item{rady}{vertical radius of the box.}
 
 \item{xmargin}{horizontal margin of plot}
+
+\item{box.col}{fill color of box}
+
+\item{xlim}{the x limits (min,max) of the plot}
+
+\item{ylim}{the y limits (min,max) of the plot}
 }
 \description{
 draw conceptual diagram of process macro model
 }
 \examples{
-covar=list(name=c("C1","C2","C3"),label=c("ese","sex","tenure"),site=list("M",c("M","Y"),c("Y")))
-pmacroModel(4,covar=covar)
-pmacroModel(1,covar=covar)
 pmacroModel(1)
+covar=list(name=c("C1","C2"),label=c("ese","sex","tenure"),site=list("Y","Y"))
+pmacroModel(1,covar=covar)
+covar=list(name=c("C1","C2","C3"),label=c("ese","sex","tenure"),site=list("M",c("Mi","Y"),c("Y")))
+pmacroModel(4,covar=covar)
 }

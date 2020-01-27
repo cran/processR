@@ -4,9 +4,20 @@
 \alias{makeIndirectEquation}
 \title{Make indirect equation}
 \usage{
-makeIndirectEquation(X, M, temp1, temp2, temp3, moderatorNames,
-  range = FALSE, data = NULL, rangemode = 1, probs = c(0.16, 0.5,
-  0.84))
+makeIndirectEquation(
+  X,
+  M,
+  temp1,
+  temp2,
+  temp3,
+  moderatorNames,
+  range = FALSE,
+  data = NULL,
+  rangemode = 1,
+  probs = c(0.16, 0.5, 0.84),
+  effectsize = FALSE,
+  Y = NULL
+)
 }
 \arguments{
 \item{X}{A character string}
@@ -28,6 +39,10 @@ makeIndirectEquation(X, M, temp1, temp2, temp3, moderatorNames,
 \item{rangemode}{range mode}
 
 \item{probs}{numeric vector of probabilities with values in [0,1]}
+
+\item{effectsize}{logical If true, calculate effect size.}
+
+\item{Y}{Optional character string}
 }
 \description{
 Make indirect equation
@@ -42,11 +57,17 @@ X= "hp";M= "am"
 temp1= c("a1*hp","a2*wt","a3*hp:wt")
 temp2= "b1*am"
 temp3= c("c1*hp","c2*wt","c3*hp:wt")
-moderatorNames=c("wt")
-X= c("d1","d2");M="am"
-temp1=c("a1*d1","a2*d2","a3*wt","a4*d1:wt","a5*d2:wt")
-temp2="b1*am"
-temp3=c("c1*d1","c2*d2","c3*wt","c4*d1:wt","c5*d2:wt")
+#moderatorNames=c("wt")
+#X= c("d1","d2");M="am"
+#temp1=c("a1*d1","a2*d2","a3*wt","a4*d1:wt","a5*d2:wt")
+#temp2="b1*am"
+#temp3=c("c1*d1","c2*d2","c3*wt","c4*d1:wt","c5*d2:wt")
 cat(makeIndirectEquation(X,M,temp1,temp2,temp3,moderatorNames))
 cat(makeIndirectEquation(X,M,temp1,temp2,temp3,moderatorNames,range=TRUE))
+X="wt";M=NULL;temp1=NULL;temp2=NULL;temp3=c("c1*wt","c2*hp","c3*wt:hp");
+moderatorNames="hp";range=TRUE;rangemode=1;probs=c(0.16,0.5,0.84)
+cat(makeIndirectEquation(X,M,temp1,temp2,temp3,moderatorNames,range=TRUE))
+X="frame:skeptic"; M="justify";temp1="a1*frame:skeptic";
+temp2="b1*justify";temp3="c1*frame:skeptic";moderatorNames=NULL
+range=TRUE;rangemode=1
 }

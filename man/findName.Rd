@@ -4,10 +4,12 @@
 \alias{findName}
 \title{convert name with list}
 \usage{
-findName(labels, name = "MiX", exact = FALSE)
+findName(labels, nodeslabels = list(), name = "MiX", exact = FALSE)
 }
 \arguments{
 \item{labels}{A named list}
+
+\item{nodeslabels}{A named list}
 
 \item{name}{A name to look for}
 
@@ -17,6 +19,19 @@ findName(labels, name = "MiX", exact = FALSE)
 convert name with list
 }
 \examples{
-labels=list(X="wt",Mi="am",Y="mpg");name="MiX"
-findName(labels,name)
+labels=list(X="wt",M="am",Y="mpg");name="MiX"
+nodeslabels=list(X="weight",M="automatic",Y="milepergallon")
+findName(labels=labels,nodeslabels=nodeslabels,name="MiX")
+findName(labels=labels,name="MiX")
+findName(labels=labels,nodeslabels=nodeslabels,name="M")
+labels=list(X="GDPpp",M="Illit",Y="LifeEx")
+nodeslabels=list(X="GDP\nper inhabitant",M="Illiteracy Rate",Y="Mean Life\nExpectation")
+findName(labels=labels,name="Mi")
+findName(labels=labels,nodeslabels=nodeslabels,name="Mi")
+labels=list(X="GDPpp",Mi="Illit",Y="LifeEx")
+nodeslabels=list(X="GDP\nper inhabitant",Mi="Illiteracy Rate",Y="Mean Life\nExpectation")
+findName(labels=labels,name="M")
+findName(labels=labels,nodeslabels=nodeslabels,name="M")
+labels=list(X="cond",M=c("import","pmi"),Y="reaction")
+findName(labels=labels,name="M1")
 }
