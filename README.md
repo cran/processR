@@ -8,16 +8,6 @@ The `processR` package aims to be a user-friendly way to perform moderation, med
 **processR is under the GPL-3 license. For a commercial license, please
 [contact me](mailto: cardiomoon@gmail.com).**
 
-**If you find processR
-useful, please consider supporting its development\!**
-
-<p align="center">
-<a href="https://www.paypal.me/cardiomoon/20">
-<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" />
-</a>
-
-</p>
-
 ## PROCESS macro and R package `processR`
 
 Andrew F. Hayes was not involved in the development of this R package or application and cannot attest to the quality of the computations implemented in the code you are using. Use at your own risk.
@@ -84,7 +74,7 @@ You can see full vignette for model 8 at http://rpubs.com/cardiomoon/468602
 
 ## Shiny App
 
-I have developed a shiny app. You can test the app at http://web-r.space:3838/processR.
+I have developed a shiny app. You can test the app at https://cardiomoon.shinyapps.io/processR.
 I will appreciate any comment.
 
 ## How to perform this analysis with shiny app

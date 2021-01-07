@@ -1,3 +1,25 @@
+## R package processR version 0.2.6
+=====================================
+(2021-Jan-5)
+
+- Change shiny app URL
+
+## R package processR version 0.2.5
+=====================================
+(2020-Mar-8)
+
+- Make modelsSummaryTable function compatible with flextable(>= 0.5.8)
+
+
+## R package processR version 0.2.4
+===================================
+(2020-Feb-22)
+
+- Add 'drawCovar' argument to drawModel function 
+
+- Can select 'estSE' as one of the 'whatLabel' argument of drawModel function
+
+
 ## R package processR version 0.2.3
 ===================================
 (2020-Jan-25)
